@@ -21,7 +21,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H 5.tcp.eu.ngrok.io >> ~/.ssh/known_hosts
+          ssh-keyscan -p 15839 -H 5.tcp.eu.ngrok.io >> ~/.ssh/known_hosts
 
       - name: Copy files to server via Ngrok
         run: |
