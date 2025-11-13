@@ -14,4 +14,4 @@ jobs:
 
       - name: Check key lines
         run: | 
-           echo "${{ secrets.SERVER_SSH_KEY }}" | head -3
+           echo "${{ secrets.SERVER_SSH_KEY }}"
