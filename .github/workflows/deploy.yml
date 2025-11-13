@@ -1,4 +1,4 @@
-name: Deploy sym64 via Ngrok
+name: Deploy sym64 via Ngrok (rsync)
 
 on:
   push:
@@ -13,8 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install SSH client
-        run: sudo apt-get update && sudo apt-get install -y openssh-client
+      - name: Install SSH + Rsync
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client rsync
 
       - name: Setup SSH Key
         run: |
@@ -23,10 +25,13 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p 15839 -H 5.tcp.eu.ngrok.io >> ~/.ssh/known_hosts
 
-      - name: Copy files to server via Ngrok
+      - name: Deploy sym64 using rsync
         run: |
-          scp -P 15839 -i ~/.ssh/id_ed25519 -r ./ deploy@5.tcp.eu.ngrok.io:/home/deploy/sym64/
+          rsync -avz --exclude '.git' \
+          -e "ssh -p 15839 -i ~/.ssh/id_ed25519" \
+          ./ deploy@5.tcp.eu.ngrok.io:/home/deploy/sym64/
 
       - name: Restart sym64 service
         run: |
-          ssh -p 15839 -i ~/.ssh/id_ed25519 deploy@5.tcp.eu.ngrok.io "sudo systemctl restart sym64"
+          ssh -p 15839 -i ~/.ssh/id_ed25519 deploy@5.tcp.eu.ngrok.io \
+          "sudo systemctl restart sym64"
