@@ -25,8 +25,8 @@ jobs:
 
       - name: Copy files to server via Ngrok
         run: |
-          scp -P 15839 -i ~/.ssh/id_ed25519 -r ./ sonu@5.tcp.eu.ngrok.io:/home/sonu/sym64/
+          scp -P 15839 -i ~/.ssh/id_ed25519 -r ./ deploy@5.tcp.eu.ngrok.io:/home/deploy/sym64/
 
-      - name: Restart Gunicorn for sym64
+      - name: Restart sym64 service
         run: |
-          ssh -p 15839 -i ~/.ssh/id_ed25519 sonu@5.tcp.eu.ngrok.io "sudo systemctl restart sym64"
+          ssh -p 15839 -i ~/.ssh/id_ed25519 deploy@5.tcp.eu.ngrok.io "sudo systemctl restart sym64"
