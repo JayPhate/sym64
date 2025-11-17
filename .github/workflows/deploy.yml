@@ -1,5 +1,12 @@
 name: Deploy sym64 via Ngrok (rsync)
 
+# ==============================
+# Define Variables
+# ==============================
+env:
+  ngrok_host: 4.tcp.eu.ngrok.io
+  ngrok_port: 19246
+
 on:
   push:
     branches:
@@ -11,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+      uses: actions/checkout@v4
 
       - name: Install SSH + Rsync
         run: |
@@ -23,15 +30,17 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p 15839 -H 5.tcp.eu.ngrok.io >> ~/.ssh/known_hosts
+          
+          # Add NGROK host to known_hosts dynamically
+          ssh-keyscan -p ${{ env.ngrok_port }} -H ${{ env.ngrok_host }} >> ~/.ssh/known_hosts
 
       - name: Deploy sym64 using rsync
         run: |
           rsync -avz --exclude '.git' \
-          -e "ssh -p 15839 -i ~/.ssh/id_ed25519" \
-          ./ deploy@5.tcp.eu.ngrok.io:/home/deploy/sym64/
+          -e "ssh -p ${{ env.ngrok_port }} -i ~/.ssh/id_ed25519" \
+          ./ deploy@${{ env.ngrok_host }}:/home/deploy/sym64/
 
       - name: Restart sym64 service
         run: |
-          ssh -p 15839 -i ~/.ssh/id_ed25519 deploy@5.tcp.eu.ngrok.io \
+          ssh -p ${{ env.ngrok_port }} -i ~/.ssh/id_ed25519 deploy@${{ env.ngrok_host }} \
           "sudo systemctl restart sym64"

@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hiya from sym64! We are using ngrok"
+    return "Hiya from sym64! Testing ngrok..."
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
